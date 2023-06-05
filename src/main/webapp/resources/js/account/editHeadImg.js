@@ -1,25 +1,26 @@
 new Vue({
-    el: "#app",
+    el:"#app",
     data:{
         imgUrl:undefined
     },
     methods:{
         /*文件发生改变时，用作图片的预览*/
-        onChange:function (file){
+        onChange:function(file){
             //获取到上传图片的大小
             let flag = file/size/1024/1024 > 1;
-            if (flag){
+            if(flag){
                 //显示错误
-                this.$alert("文件上传的大小最大只能是1M");
+                this.$alert("文件上传的大小最大只能为1M");
                 return false;
             }
-            //raw表示是原图
+            //raw表示上传的图片是原图片，是没有经过任何处理的
             this.imgUrl = URL.createObjectURL(file.raw);
         },
         //后端返回给前端
-        onSuccess:function (result){
+        onSuccess:function(result){
+            //获取状态码
             let code = result.code;
-            if (code == 200){
+            if(code == 200){
                 //显示通知
                 this.$notify({
                     title:"温馨提示",
@@ -32,23 +33,23 @@ new Vue({
                 let userObj = JSON.parse(window.localStorage.getItem("user"));
                 //将imgUrl的值保存到本地缓存imgUrl对象中
                 userObj.imgUrl = this.imgUrl;
-                window.localStorage.setItem("user", JSON.stringify(userObj));
-                /*下载图片，并显示到页面上*/
-                window.document.getElementById("headImg").src=
+                window.localStorage.setItem("user",JSON.stringify(userObj));
+                //下载图片，并显示在页面上
+                window.document.getElementById("headImg").src =
                     "/download/downloadImg.do?imgUrl=" + this.imgUrl;
-            }else{
-                let msg = result.data.msg;
+            } else {
+                //失败的通知
+                let msg = result.msg;
                 this.$notify({
                     title:"温馨提示",
-                    message: msg + "上传失败",
-                    type: "danger"
+                    message:msg + "上传失败",
+                    type:"danger"
                 })
             }
         },
         //点击按钮，触发文件上传的方法
-        uploadHeadImg:function (){
+        uploadHeadImg:function(){
             this.$refs['uploadImgRef'].submit();
         }
-
     }
 })

@@ -11,23 +11,23 @@ import java.util.List;
 
 public interface UserMapper {
 
-    // 分页查询
-    @Select("select u.*, d.name, d.name from user u inner join dept d on u.dept_id= d.id")
-    List<User> selectUserByPgae();
+    //分页查询
+    @Select("select u.*,d.name,d.loc from user u inner join dept d on u.dept_id = d.id")
+    List<User> selectUserByPage();
 
-    // 添加客户信息
+    //添加客户信息
     int insert(UserDto userDto);
 
     //添加功能时，要判断是否选择了部门
-    @Select("select count(*) from dept where id=#{deptId}")
+    @Select("select count(*) from dept where id = #{deptId}")
     int selectDeptsIsExist(UserDto userDto);
 
-    // 添加时，查询数据库表是否已经存在要添加的这条记录
+    //添加功能时，查询数据库表是否已经存在要添加的这条记录
     @Select("select count(*) from user where username = #{username} and birthday = #{birthday} " +
-            "and address=#{address} and sex = #{sex} and tel = #{tel}")
+            "and address = #{address} and sex = #{sex} and tel = #{tel}")
     int selectUsersIsExist(UserDto userDto);
 
-    //批量删除
+    //批量删除delete fron user where id in(47,48)
     @Delete("delete from user where id in(${arg0})")
     int deleteManyUser(String id);
 

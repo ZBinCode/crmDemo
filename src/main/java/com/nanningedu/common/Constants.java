@@ -23,6 +23,6 @@ public class Constants {
     public static final String CODE_SESSION_KEY = "CODE_SESSION_KEY";
 
     //头像
-    public static final String DEFAULT_HEAD_IMG = "DEFAULT_HEAD_IMG";
+    public static final String DEFAULT_HEAD_IMG = "default.png";
 
 }

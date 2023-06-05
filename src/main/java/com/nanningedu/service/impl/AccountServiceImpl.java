@@ -57,12 +57,32 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Result modifyUploadHeadImg(String imgUrl, HttpSession session) {
+        //获取到登录人的id
         String userId = session.getAttribute(Constants.USER_SESSION_ID) + "";
-        int i = accountMapper.updateAccountImgUrl(imgUrl, Long.parseLong(userId));
-        if (i == 0){
+        Long id = Long.parseLong(userId);
+        int i = accountMapper.updateAccountImgUrl(imgUrl,id);
+        if(i == 0){
             return new Result(-1,"文件上传失败");
         }
+        return new Result();
+    }
 
+    //状态的禁用与启用
+    @Override
+    public Result modifyAccountStatus(Integer status,Long id,HttpSession session) {
+        //校验数据
+        if(!(status == 0 || status == 1) || id <= 0){
+            return Result.DATA_FORMAT_ERROR;
+        }
+        //判断此操作是否是超级管理员在进行操作
+        String role = session.getAttribute(Constants.ROLE_SESSION_KEY)+"";
+        if(!(role.equals("1"))){
+            return new Result(-1,"你不是超级管理员，没有此操作权限");
+        }
+        int i = accountMapper.updateAccountStatus(status,id);
+        if(i == 0){
+            return new Result(-1,"修改状态失败");
+        }
         return new Result();
     }
 

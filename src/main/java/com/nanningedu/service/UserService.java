@@ -6,7 +6,7 @@ import com.nanningedu.dto.UserDto;
 
 public interface UserService {
 
-    // 分页查询
+    //分页查询
     Result findUserByPage(Integer pageNum, Integer pageSize);
 
     //添加
@@ -23,4 +23,5 @@ public interface UserService {
 
     //修改
     Result modifyUser(UserDto userDto);
+
 }

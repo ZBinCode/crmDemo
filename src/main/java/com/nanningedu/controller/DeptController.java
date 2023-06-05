@@ -25,9 +25,10 @@ public class DeptController {
     ){
         return deptService.findDeptsByPage(pageNum,pageSize);
     }
-    @RequestMapping("addDept.do")
+
+    @RequestMapping("/addDept.do")
     public Result addDept(@Valid DeptDto deptDto, BindingResult br){
-        if (br.hasErrors()){
+        if(br.hasErrors()){
             return Result.DATA_FORMAT_ERROR;
         }
         return deptService.saveDept(deptDto);

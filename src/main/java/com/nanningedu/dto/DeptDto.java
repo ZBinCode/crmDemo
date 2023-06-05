@@ -1,22 +1,18 @@
 package com.nanningedu.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /*
 * 做部门的添加功能时，需要使用该dto
+* 定义校验规则
 * */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
 public class DeptDto {
 
+    //主键
     private Long id;
 
     @NotNull

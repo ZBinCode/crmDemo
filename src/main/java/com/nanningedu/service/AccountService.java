@@ -14,6 +14,9 @@ public interface AccountService {
     Result findLogin(AccountDto accountDto, HttpSession session);
 
     //上传文件
-    Result modifyUploadHeadImg(String imgUrl, HttpSession session);
+    Result modifyUploadHeadImg(String imgUrl,HttpSession session);
+
+    //状态的禁用和启用
+    Result modifyAccountStatus(Integer status,Long id,HttpSession session);
 
 }

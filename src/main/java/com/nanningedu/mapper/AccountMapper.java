@@ -26,8 +26,12 @@ public interface AccountMapper {
     @Select("select count(*) from account where username = #{param1}")
     int selectUserNameIsExist(String username);
 
-    // 文件上传
-    @Update("update account set img_url=#{param1} where id = #{param2}")
-    int updateAccountImgUrl(String imgUrl, Long id);
+    //文件上传
+    @Update("update account set img_url = #{param1} where id = #{param2}")
+    int updateAccountImgUrl(String imgUrl,Long id);
+
+    //修改登录状态
+    @Update("update account set status = #{arg0} where id = #{arg1}")
+    int updateAccountStatus(Integer status,Long id);
 
 }

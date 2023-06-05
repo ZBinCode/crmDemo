@@ -17,7 +17,8 @@ public interface DeptMapper {
     @Insert("insert into dept values(null,#{name},#{loc})")
     int insertDept(DeptDto deptDto);
 
-    //判断要添加的部门，数据库表里面是否已经存在
-    @Select("select count(*) from dept where name=#{arg0}")
+    //判断要添加的部门，数据库表里面是否已经存在了
+    @Select("select count(*) from dept where name = #{arg0}")
     int selectDeptNameIsExist(String name);
+
 }

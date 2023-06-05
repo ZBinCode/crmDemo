@@ -1,11 +1,14 @@
 package com.nanningedu.controller;
 
+import com.nanningedu.common.Constants;
 import com.nanningedu.common.Result;
 import com.nanningedu.dto.AccountDto;
 import com.nanningedu.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
@@ -28,6 +31,20 @@ public class AccountController {
             return Result.DATA_FORMAT_ERROR;
         }
         return accountService.findLogin(accountDto,session);
+    }
+
+    //退出登录
+    @RequestMapping("/editLoginToOut.do")
+    public Result editLoginToOut(HttpSession session){
+        //后端清除缓存
+        session.removeAttribute(Constants.USER_SESSION_KEY);
+        return new Result();
+    }
+
+    //禁用和启用
+    @RequestMapping("/editAccountStatus.do")
+    public Result editAccountStatus(Integer status,Long id,HttpSession session){
+        return accountService.modifyAccountStatus(status,id,session);
     }
 
 }

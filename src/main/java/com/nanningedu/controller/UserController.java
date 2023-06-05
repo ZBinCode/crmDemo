@@ -1,6 +1,5 @@
 package com.nanningedu.controller;
 
-
 import com.nanningedu.common.Result;
 import com.nanningedu.dto.SearchDto;
 import com.nanningedu.dto.UserDto;
@@ -20,18 +19,19 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // required = false 如果没有给pageSize设置值，则使用默认值defaultValue = "10"
+    //required = false 意为如果没有给pageSize设置值
+    //defaultValue = "10" 意为那么就给pageSize设置一个值为10的默认值
     @RequestMapping("/getUsersByPage.do")
-    public Result getUserByPage(
+    public Result getUsersByPage(
             Integer pageNum,
             @RequestParam(required = false,defaultValue = "10") Integer pageSize
-            ){
+    ){
         return userService.findUserByPage(pageNum,pageSize);
     }
 
     @RequestMapping("/addUser.do")
     public Result addUser(@Valid UserDto userDto, BindingResult br){
-        if (br.hasErrors()){
+        if(br.hasErrors()){
             return Result.DATA_FORMAT_ERROR;
         }
         return userService.saveUser(userDto);
@@ -42,22 +42,22 @@ public class UserController {
         return userService.removeManyUser(id);
     }
 
-    @RequestMapping("getUsersBySearch.do")
-    public Result getUsersBySearch(@Valid SearchDto searchDto, BindingResult br){
-        if (br.hasErrors()){
+    @RequestMapping("/getUserBySearch.do")
+    public Result getUserBySearch(@Valid SearchDto searchDto,BindingResult br){
+        if(br.hasErrors()){
             return Result.DATA_FORMAT_ERROR;
         }
         return userService.findUsersBySearch(searchDto);
     }
 
-    @RequestMapping("cutOneUser.do")
+    @RequestMapping("/cutOneUser.do")
     public Result cutOneUser(Long id){
         return userService.removeOneUser(id);
     }
 
-    @RequestMapping("editUser.do")
+    @RequestMapping("/editUser.do")
     public Result editUser(@Valid UserDto userDto,BindingResult br){
-        if (br.hasErrors()){
+        if(br.hasErrors()){
             return Result.DATA_FORMAT_ERROR;
         }
         return userService.modifyUser(userDto);

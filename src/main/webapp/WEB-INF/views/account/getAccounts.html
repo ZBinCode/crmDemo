@@ -14,6 +14,7 @@
 </head>
 <body>
     <div id="app">
+        <!--如果isRoot的角色是超级管理员，那么可以操作此添加按钮，如果isRoot的角色是普通管理员，那么没有添加按钮存在-->
         <el-row v-show="isRoot">
             <el-col :span="4">
                 <el-button type="success" icon="el-icon-plus" size="small" round
@@ -29,15 +30,14 @@
             <el-table-column label="账号" align="center" prop="username"></el-table-column>
             <el-table-column label="头像" align="center" prop="imgUrl">
                 <template slot-scope="scope">
-                    <!--放大图片-->
+                    <!--放大图  点击图片触发查看大图-->
                     <el-popover placement="right" title="查看大图" trigger="click">
                         <!--原图-->
                         <el-image slot="reference" :src="'/download/downloadImg.do?imgUrl='.concat(scope.row.imgUrl)"
                             style="width: 50px;height: 50px;cursor: pointer"></el-image>
                         <!--放大图-->
                         <el-image :src="'/download/downloadImg.do?imgUrl='.concat(scope.row.imgUrl)"
-                            style="width: 250px;height: 250px;"></el-image>
-
+                                  style="width: 250px;height: 250px;"></el-image>
                     </el-popover>
                 </template>
             </el-table-column>
@@ -46,21 +46,22 @@
                 :formatter="updateTimeFmt"></el-table-column>
             <el-table-column label="状态" align="center" prop="status"
                 :formatter="statusFmt"></el-table-column>
+            <!--如果isRoot的角色是超级管理员，那么可以操作此操作里面的内容，如果isRoot的角色是普通管理员，那么没有操作这一栏存在-->
             <el-table-column label="操作" align="center" width="350" v-if="isRoot">
                 <template slot-scope="scope">
                     <el-form :inline="true" size="small">
                         <el-form-item>
                             <!--disabled=true表示禁用，反之为启用-->
-                            <el-button :disabled="scope.rwo.role == 1 ?true:false" type="danger"
-                            icon="el-icon-delete" @click="delOneAccount(scope.row)">删除</el-button>
+                            <el-button :disabled="scope.row.role == 1 ? true : false" type="danger"
+                                icon="el-icon-delete" @click="delOneAccount(scope.row)">删除</el-button>
                         </el-form-item>
                         <el-form-item>
                             <el-button type="danger" icon="el-icon-refresh" @click="resetAccountPwd(scope.row)">重置密码</el-button>
                         </el-form-item>
                         <el-form-item>
-                            <el-switch :active-value="1" :inactive-value="0" :disabled="scope.row.role == 1? true:false"
-                            @change="switchChange(scope.orw)" v-model="scope.row.status" active-text="启用"
-                            inactive-text="禁用"></el-switch>
+                            <el-switch :active-value="1" :inactive-value="0" :disabled="scope.row.role == 1 ? true : false"
+                                @change="switchChange(scope.row)" v-model="scope.row.status" active-text="启用"
+                                inactive-text="禁用"></el-switch>
                         </el-form-item>
                     </el-form>
                 </template>
@@ -81,7 +82,7 @@
             <el-form ref="addAccountWinRef" :model="addAccountFormData" :rules="addAccountWinRules">
                 <el-form-item prop="username">
                     <el-input v-model="addAccountFormData.username" prefix-icon="el-icon-user"
-                    placeholder="请输入账号名称"></el-input>
+                        placeholder="请输入账号名称"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" icon="el-icon-check" @click="addAccountOK">确定</el-button>
@@ -90,5 +91,7 @@
             </el-form>
         </el-dialog>
     </div>
+<!--引入自定义的js-->
+<script type="text/javascript" src="/resources/js/account/getAccounts.js"></script>
 </body>
 </html>

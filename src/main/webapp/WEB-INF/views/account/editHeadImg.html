@@ -20,16 +20,16 @@
                     id="headImg"
                     name="headImg"
                     action="/upload/uploadFile.do"
-                    accept=".jpg,.JPG,.jpeg,.JPEG,.png,.PNG,.git,.GIF"
+                    accept=".jpg,.JPG,.JPEG,.png,.PNG,.gif,.GIF"
                     :auto-upload="false"
                     :show-file-list="false"
                     @on-change="onChange"
                     @on-success="onSuccess"
                     ref="uploadImgRef">
-
-                    <div style="height: 200px;width: 200px;" class="el-upload-dragger">
-                        <!--没有图片时显示文字，有图片时，显示图片-->
+                    <div style="width: 200px;height: 200px" class="el-upload-dragger">
+                        <!--没有图片时，显示云和文字，当有图片时，只显示图片-->
                         <img v-if="imgUrl" :src="imgUrl" style="width: 200px;height: 200px">
+                        <!--默认显示的内容-->
                         <div v-else>
                             <!--云图标-->
                             <i class="el-icon-upload"></i>
@@ -44,8 +44,7 @@
             </el-form-item>
         </el-form>
     </div>
-
-<!--引入自定义js脚本-->
+<!--引入自定义的js-->
 <script type="text/javascript" src="/resources/js/account/editHeadImg.js"></script>
 </body>
 </html>
