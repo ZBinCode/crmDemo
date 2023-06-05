@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!--Spring框架有很多注解可以使用，不是写出来之后就可以直接使用，而是需要对注解进行扫描，只有在扫描之后Spring注解才会生效-->
+    <!--Spring框架里面的注解，是放在impl包下面使用的-->
+    <context:component-scan base-package="com.nanningedu.service.impl"></context:component-scan>
+
+    <!--在Spring框架中关联jdbc数据源-->
+    <!--
+        在db.properties文件中定义了一个属性叫username,原本这个username就有一个默认的值，在spring-context.xml文件中，需要
+        使用${username}的方式来获取，db.properties文件中username属性的值，如果不设置system-properties-mode这个属性，那么
+        在spring-context.xml文件中，使用${username}方式获取的值，很有可能是username的默认值，那么想要获取到刚才才设置的那个
+        username的值的话，就需要加上system-properties-mode="FALLBACK"
+    -->
+    <context:property-placeholder location="classpath:db.properties"
+        system-properties-mode="FALLBACK"></context:property-placeholder>
+    <!--获取到db.properties文件中四个属性对应的值-->
+    <!--
+        bean容器，是Spring框架的特点之一
+        没有学Spring容器时，DriverManagerDataSource dataSource = new DriverManagerDataSource()
+        使用Spring容器时，DriverManagerDataSource dataSource = Spring容器.方法()
+        Spring的核心功能：ioc(控制反转)、di（注入）
+    -->
+    <!--ioc-->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <!--di-->
+        <!--name的取名是固定的写法-->
+        <!--根据属性来获取值-->
+        <property name="driverClassName" value="${jdbc.driverClassName}"></property>
+        <property name="url" value="${jdbc.url}"></property>
+        <property name="username" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+
+    <bean id="configuration" class="org.apache.ibatis.session.Configuration">
+        <!--配置日志-->
+        <property name="logImpl" value="org.apache.ibatis.logging.log4j.Log4jImpl"></property>
+        <!--配置缓存:数据的存储就两种方式：1往数据库存 2缓存存数据：访问速度更加快-->
+        <property name="cacheEnabled" value="true"></property>
+    </bean>
+    <!--创建一个会话工厂-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--指定数据源-->
+        <!--已经在上面获取到的值，那么只需要使用ref引用进来即可-->
+        <property name="dataSource" ref="dataSource"></property>
+        <!--指定局部xxxMapper.xml的位置-->
+        <!--全局映射 和 局部映射 的区别：
+            全局映射：作用于整个项目
+            局部映射：只能作用于项目里面的某一部分代码
+        -->
+        <property name="mapperLocations" value="classpath*:mapper/*.xml"></property>
+        <!--指定分页插件-->
+        <property name="plugins">
+            <array>
+                <!--只需要类里面的方法，不需要创建对象-->
+                <bean class="com.github.pagehelper.PageInterceptor"></bean>
+            </array>
+        </property>
+        <!--指定别名-->
+        <!--是以domain包下面的某一个类名作为别名-->
+        <!--
+            别名一般是在/resources/mapper/*.xml这些局部配置文件中使用
+            未使用别名，在a.xml里面,会写到一个属性resultType=com.nanningedu.domain.User
+            使用别名，在a.xml里面,会写到一个属性resultType=User
+        -->
+        <property name="typeAliasesPackage" value="com.nanningedu.domain"></property>
+        <!--指定日志-->
+        <property name="configuration" ref="configuration"></property>
+    </bean>
+
+    <!--指定局部映射的xml所映射的代码-->
+    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.nanningedu.mapper"></property>
+    </bean>
+
+    <!--事务:要么都ok,要么都不ok-->
+    <!--当mybatis框架去操作数据库表里面的数据，并且数据确实发生了改变时，就会产生事务-->
+    <!--增加，修改，删除（都会产生事务），查询（不会产生事务）-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--指定数据源-->
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!--使用的是注解类型的事务，也要扫描注解-->
+    <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+
+</beans>

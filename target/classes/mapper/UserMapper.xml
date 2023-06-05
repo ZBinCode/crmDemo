@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nanningedu.mapper.UserMapper">
+
+    <insert id="insert" parameterType="com.nanningedu.dto.UserDto">
+        insert into user(username,birthday,sex,tel,sal,profession,address,remark,dept_id)
+        values(
+            #{username,jdbcType=VARCHAR},#{birthday,jdbcType=TIMESTAMP},#{sex,jdbcType=VARCHAR},
+            #{tel,jdbcType=VARCHAR},#{sal,jdbcType=FLOAT},#{profession,jdbcType=VARCHAR},
+            #{address,jdbcType=VARCHAR},#{remark,jdbcType=VARCHAR},#{deptId,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <!--sql的动态获取-->
+    <!--
+        这是三条sql语句
+        select * from user
+        select * from user where username = 汪武阳
+        select * from user where username = 汪武阳 and tel = 13718345566
+        可以将上面的三条sql语句，用一条sql语句来实现
+
+        select u.*,d.name,d.loc,u.dept_id as deptId from user u inner join dept d on u.dept_id = d.id表示不带任何条件的查询
+    -->
+    <select id="selectUsersBySearch" resultType="com.nanningedu.domain.User" parameterType="com.nanningedu.dto.SearchDto">
+        select u.*,d.name,d.loc,u.dept_id as deptId from user u inner join dept d on u.dept_id = d.id
+        <where>
+            <if test="username != null and username != ''">
+                and u.username = #{username}
+            </if>
+            <if test="tel != null and tel != ''">
+                and u.tel = #{tel}
+            </if>
+            <if test="deptName != null and deptName != ''">
+                and d.name = #{deptName}
+            </if>
+            <if test="sex != null and sex != ''">
+                and u.sex = #{sex}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateUser" parameterType="com.nanningedu.dto.UserDto">
+        update user set
+            username = #{username},birthday = #{birthday},sex = #{sex},
+            tel = #{tel},sal = #{sal},profession = #{profession},
+            address = #{address},remark = #{remark},dept_id = #{deptId}
+        where
+            id = #{id}
+    </update>
+
+</mapper>

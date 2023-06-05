@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>部门管理列表</title>
+    <!--引入elementUI的样式-->
+    <link rel="stylesheet" href="/resources/element-ui/lib/theme-chalk/index.css">
+    <!--引入vue的js-->
+    <script type="text/javascript" src="/resources/js/vue.js"></script>
+    <!--引入elementUI的js-->
+    <script type="text/javascript" src="/resources/element-ui/lib/index.js"></script>
+    <!--引入axios-->
+    <script src="/resources/js/axios.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <el-row>
+            <el-col :span="4">
+                <!--@click="openAddDeptWin"-->
+                <el-button type="success" icon="el-icon-plus" round size="small"
+                           @click="openAddDeptWin">添加</el-button>
+            </el-col>
+        </el-row>
+        <div style="margin: 5px"></div>
+        <el-table :data="deptDataArray" border>
+            <el-table-column label="序号" width="200" align="center" type="index"></el-table-column>
+            <el-table-column label="主键" width="200" align="center" prop="id"></el-table-column>
+            <el-table-column label="部门名称" width="200" align="center" prop="name"></el-table-column>
+            <el-table-column label="部门地址" width="200" align="center" prop="loc"></el-table-column>
+        </el-table>
+        <!--分页-->
+        <el-pagination
+                :total="total"
+                :current-page="pageNum"
+                :page-size="pageSize"
+                :page-sizes="pageSizes"
+                @current-change="currentChange"
+                @size-change="sizeChange"
+                layout="total, sizes, prev, pager, next, jumper">
+        </el-pagination>
+        <!--点击添加按钮，显示弹出框   @close="addDeptWinClose"-->
+        <el-dialog title="添加部门" :visible.sync="addDeptWinOpenStatus" @close="addDeptWinClose">
+            <!--
+                model的对象用来保存数据
+                rules的对象用于做前端数据输入的校验
+                ref的对象表示把整个弹出框看成是一个控件
+            -->
+            <el-form ref="addDeptWinRef" :model="addDeptFormatData" :rules="addDeptFormatRules">
+                <!--用prop属性来指定要操作的是对应的数据库表里面的哪一个字段-->
+                <el-form-item prop="name">
+                    <el-input v-model="addDeptFormatData.name" prefix-icon="el-icon-location"
+                              placeholder="请输入部门名称"></el-input>
+                </el-form-item>
+                <el-form-item prop="loc">
+                    <el-input v-model="addDeptFormatData.loc" prefix-icon="el-icon-location"
+                              placeholder="请输入部门地址"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <!--@click="addDeptOK"-->
+                    <el-button type="primary" icon="el-icon-check" @click="addDeptOK">确定</el-button>
+                    <!--@click="resetAddDeptWin"-->
+                    <el-button type="danger" icon="el-icon-close" @click="resetAddDeptWin">取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+    </div>
+<!--引入自定义的js-->
+<script type="text/javascript" src="/resources/js/dept/getDepts.js"></script>
+</body>
+</html>
