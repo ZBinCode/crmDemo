@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>客户管理列表</title>
+    <!--vue+elementUI-->
+    <!--引入elementUI的样式-->
+    <link rel="stylesheet" href="/resources/element-ui/lib/theme-chalk/index.css">
+    <!--引入vue的js-->
+    <script type="text/javascript" src="/resources/js/vue.js"></script>
+    <!--引入elementUI的js-->
+    <script type="text/javascript" src="/resources/element-ui/lib/index.js"></script>
+    <!--引入axios-->
+    <script src="/resources/js/axios.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!--elementUI的标签都是以el-开头的-->
+        <!--行-->
+        <!--space-between:均匀显示-->
+        <el-row type="flex" justify="space-between">
+            <!--列-->
+            <el-col :span="4">
+                <el-button type="success" icon="el-icon-plus" size="small" @click="openAddWin"><!--@click="openAddWin"-->
+                    添加
+                </el-button>
+                <el-button type="danger" icon="el-icon-delete" size="small"
+                           @click="delMany">批量删除</el-button>
+            </el-col>
+            <el-col :span="20">
+                <el-form :inline="true" size="small">
+                    <!--el-form-item表示表单项--->
+                    <el-form-item>
+                        <el-input v-model="searchFormData.username"
+                                  prefix-icon="el-icon-user" placeholder="请输入客户姓名">
+
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-input v-model="searchFormData.tel"
+                                  prefix-icon="el-icon-mobie-phone" placeholder="请输入手机号">
+
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-select v-model="searchFormData.deptName" placeholder="请选择部门">
+                            <!--v-for是循环次数-->
+                            <el-option
+                                    v-for="(item,index) in deptList"
+                                    :label="item.name"
+                                    :value="item.name">
+
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-radio-group v-model="searchFormData.sex">
+
+                        </el-radio-group>
+                        <el-radio  label="1">男</el-radio>
+                        <el-radio  label="2">女</el-radio>
+                    </el-form-item>
+
+                    <el-form-item>
+                        <el-button type="primary" icon="el-icon-search" size="small"
+                                   @click="searchUsers">搜索</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-col>
+        </el-row>
+        <!--产生一小段的间隔-->
+        <div style="margin: 5px"></div>
+        <!--表格-->
+        <!--userList存放表格所以数据  @select-all全选  @select单选-->
+        <el-table :data="userList" border @select-all="selectAll" @select="selectOne">
+            <!--当表格中的字段不是来自于数据库时，需要使用type属性来定义-->
+            <el-table-column label="复选框" align="center" type="selection"></el-table-column>
+            <el-table-column label="序号" align="center" type="index"></el-table-column>
+            <!--当表格中的字段来自于数据库表里面的字段时，需要使用prop属性来定义-->
+            <el-table-column label="主键" align="center" prop="id"></el-table-column>
+            <el-table-column label="客户姓名" align="center" prop="username"></el-table-column>
+            <el-table-column label="生日" align="center" prop="birthday"></el-table-column>
+            <el-table-column label="性别" align="center" prop="sex"
+                :formatter="sexFmt"></el-table-column>
+            <el-table-column label="电话" align="center" prop="tel"></el-table-column>
+            <el-table-column label="薪资（元）" align="center" prop="sal"
+                :formatter="salFmt"></el-table-column>
+            <el-table-column label="职业" align="center" prop="profession"
+                :formatter="professionFmt"></el-table-column>
+            <el-table-column label="员工住址" align="center" prop="address"></el-table-column>
+            <el-table-column label="备注" align="center" prop="remark">
+                <template slot-scope="scope">
+                    {{scope.row.remark == null || scope.row.remark == '' ? '暂无信息' : scope.row.remark}}
+                </template>
+            </el-table-column>
+            <el-table-column label="部门名称" align="center" prop="name"></el-table-column>
+            <el-table-column label="部门地址" align="center" prop="loc"></el-table-column>
+            <el-table-column label="操作" width="200" align="center">
+                <template slot-scope="scope">
+                    <div>
+
+                        <el-button type="success" icon="el-icon-edit" size="mini"
+                                   @click="openEditWin(scope.row)">编辑</el-button>
+
+                        <el-button type="danger" icon="el-icon-delete" size="mini"
+                                   @click="delOne(scope.row)">删除</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+        <!--分页-->
+        <el-pagination
+                :total="total"
+                :current-page="pageNum"
+                :page-size="pageSize"
+                :page-sizes="pageSizes"
+                @current-change="currentChange"
+                @size-change="sizeChange"
+                layout="total, sizes, prev, pager, next, jumper">
+        </el-pagination>
+        <!--点击添加按钮的弹出框-->
+        <el-dialog title="添加客户信息" :visible.sync="addUsersWinOpenStatus" @close="addUserWinClose">
+            <el-form ref="addUserWinRef" :rules="formRules" :model="addUsersFormData">
+                <el-form-item prop="username" label="姓名" label-width="60px">
+                    <el-input v-model="addUsersFormData.username" prefix-icon="el-icon-user"
+                        placeholder="长度为2-10位的简体中文">
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="birthday" label="生日" label-width="60px">
+                    <el-date-picker v-model="addUsersFormData.birthday" value-format="yyyy-MM-dd"
+                         placeholder="请选择生日">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item prop="sex" label="性别" label-width="60px">
+                    <el-radio-group v-model="addUsersFormData.sex">
+                        <el-radio :label="1">男</el-radio>
+                        <el-radio :label="0">女</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item prop="tel" label="手机" label-width="60px">
+                    <el-input v-model="addUsersFormData.tel" prefix-icon="el-icon-mobile-phone"
+                         placeholder="请输入手机号">
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="sal" label="薪资" label-width="60px">
+                    <el-input v-model="addUsersFormData.sal" prefix-icon="el-icon-money"
+                         placeholder="请输入薪资">
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="profession" label="职业" label-width="60px">
+                    <el-select v-model="addUsersFormData.profession" placeholder="请选择职业">
+                        <el-option label="程序员" value="1"></el-option>
+                        <el-option label="工程师" value="2"></el-option>
+                        <el-option label="码农" value="3"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item prop="address" label="住址" label-width="60px">
+                    <el-input v-model="addUsersFormData.address" prefix-icon="el-icon-location"
+                              placeholder="地址长度为10-50">
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="remark" label="备注" label-width="60px">
+                    <el-input v-model="addUsersFormData.remark" prefix-icon="el-icon-more"
+                              placeholder="请输入备注">
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="deptId" label="部门" label-width="60px">
+                    <el-select v-model="addUsersFormData.deptId" placeholder="请选择部门">
+                        <el-option v-for="item in deptList" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label-width="60px">
+                    <el-button type="primary" icon="el-icon-check" @click="addUsersOK">确定</el-button>
+                    <el-button type="danger" icon="el-icon-close" @click="addUsersCancel">取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+        <!--点击修改按钮的弹出框-->
+        <el-dialog title="修改客户信息" :visible.sync="editUsersWinOpenStatus" @close="editUsersWinClose">
+            <el-form ref="editUserWinRef" :rules="formRules" :model="editUsersFormData">
+                <el-form-item prop="username" label="姓名" label-width="60px">
+                    <el-input v-model="editUsersFormData.username" prefix-icon="el-icon-user"
+                              placeholder="长度为2-10位的简体中文">
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="birthday" label="生日" label-width="60px">
+                    <el-date-picker v-model="editUsersFormData.birthday" value-format="yyyy-MM-dd"
+                                    placeholder="请选择生日">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item prop="sex" label="性别" label-width="60px">
+                    <el-radio-group v-model="editUsersFormData.sex">
+                        <el-radio :label="1">男</el-radio>
+                        <el-radio :label="0">女</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item prop="tel" label="手机" label-width="60px">
+                    <el-input v-model="editUsersFormData.tel" prefix-icon="el-icon-mobile-phone"
+                              placeholder="请输入手机号">
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="sal" label="薪资" label-width="60px">
+                    <el-input v-model="editUsersFormData.sal" prefix-icon="el-icon-money"
+                              placeholder="请输入薪资">
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="profession" label="职业" label-width="60px">
+                    <el-select v-model="editUsersFormData.profession" placeholder="请选择职业">
+                        <el-option label="程序员" value="1"></el-option>
+                        <el-option label="工程师" value="2"></el-option>
+                        <el-option label="码农" value="3"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item prop="address" label="住址" label-width="60px">
+                    <el-input v-model="editUsersFormData.address" prefix-icon="el-icon-location"
+                              placeholder="地址长度为10-50">
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="remark" label="备注" label-width="60px">
+                    <el-input v-model="editUsersFormData.remark" prefix-icon="el-icon-more"
+                              placeholder="请输入备注">
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="deptId" label="部门" label-width="60px">
+                    <el-select v-model="editUsersFormData.deptId" placeholder="请选择部门">
+                        <el-option v-for="item in deptList" :label="item.name" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label-width="60px">
+                    <el-button type="primary" icon="el-icon-check" @click="editUsersOK">确定</el-button>
+                    <el-button type="danger" icon="el-icon-close" @click="editUsersCancel">取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+    </div>
+<!--引入自定义js脚本-->
+<script type="text/javascript" src="/resources/js/user/getUsers.js"></script>
+</body>
+</html>

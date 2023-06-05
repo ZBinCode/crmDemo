@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>动力后台管理平台</title>
+    <link href="/resources/js/layuimini/lib/layui-v2.6.3/css/layui.css" rel="stylesheet">
+    <script src="/resources/js/layuimini/lib/layui-v2.6.3/layui.js" type="text/javascript"></script>
+    <script src="/resources/js/main.js" type="text/javascript"></script>
+    <script src="/resources/js/axios.min.js"></script>
+
+    <!--异步-->
+    <script type="text/javascript">
+        // 将缓存中的数据取出
+        var user = window.localStorage.getItem("user");
+        // 解析JSON字符串，转换为JavaScript对象来使用
+        var userObj = JSON.parse(user);
+        // 获取缓存的用户名
+        var username = userObj.username;
+        // 获取头像地址
+        var imgUrl = userObj.imgUrl;
+        // 点击登录按钮之后，默认自动加载后端主页面
+        window.onload = function () {
+            // 设置欢迎页
+            document.getElementById("welcome").innerHTML =
+                "<span style='font-size: 20px'>欢迎" + username + ",使用后台管理平台</span>";
+
+            // 设置右上角
+            document.getElementById("username").innerHTML = "欢迎，" + username;
+            // 设置头像
+            document.getElementById("headImg").src =
+                "/download/downloadImg.do?imgUrl=" + imgUrl;
+        }
+
+        // 退出登录
+        function logout() {
+            axios({
+                url: "/account/editLoginToOut.do",
+                method: "POST",
+                params: {}
+            }).then((result) => {
+                // 重新登录，需要清除在前端缓存中的数据
+                window.localStorage.removeItem("user");
+                // 退出登录之后，跳转到登录的页面
+                window.location.href = "/forward/toLogin.do"
+            })
+        }
+
+    </script>
+</head>
+<body>
+<div class="layui-layout-admin">
+    <div class="layui-header">
+        <!--平台名称-->
+        <div class="layui-logo">动力后台管理平台</div>
+        <!--左侧主菜单-->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href="#">日志设置</a></li>
+            <li class="layui-nav-item"><a href="#">系统设置</a></li>
+            <li class="layui-nav-item"><a href="#">统计</a></li>
+            <li class="layui-nav-item"><a href="#">帮助</a></li>
+        </ul>
+        <!--右侧主菜单-->
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <!--后台右上角登录信息-->
+                <a href="javascript:">
+                    <span id="username"></span>
+                    <img id="headImg" style="width: 40px;height: 40px">
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="#" onclick="logout()">退出</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+    <div class="layui-side layui-bg-black">
+        <ul class="layui-nav layui-nav-tree" lay-filter="menu">
+            <li class="layui-nav-item">
+                <a href="#" id="1" url="/forward/toPage.do?pageUrl=user/getUsers">
+                    <i class="layui-icon layui-icon-user"></i>
+                    客户管理
+                </a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="#">
+                    <i class="layui-icon layui-icon-camera"></i>
+                    账号管理</a>
+                <dl class="layui-nav-child">
+                    <dd>
+                        <a href="#" id="2" url="/forward/toPage.do?pageUrl=account/getAccounts">
+                            <i class="layui-icon layui-icon-user"></i>
+                        账号列表</a>
+                    </dd>
+                    <dd>
+                        <a href="#" id="3" url="/forward/toPage.do?pageUrl=account/editHeadImg">
+                        <i class="layui-icon layui-icon-upload"></i>
+                            修改头像
+                        </a>
+                    </dd>
+                    <dd>
+                        <a href="#" id="4" url="/forward/toPage.do?pageUrl=account/editPwd">
+                            <i class="layui-icon layui-icon-password"></i>
+                            修改密码
+                        </a>
+                    </dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item">
+                <a href="#" id="5" url="/forward/toPage.do?pageUrl=dept/getDepts">
+                    <i class="layui-icon layui-icon-location"></i>
+                    部门管理
+                </a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="#" id="6" url="/forward/toPage.do?pageUrl=echarts/getEcharts">
+                    <i class="layui-icon layui-icon-email"></i>
+                    报表管理
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="layui-body">
+        <div class="layui-tab" lay-allowClose="true" lay-filter="zst">
+            <ul class="layui-tab-title">
+                <li class="layui-this">首页</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show" id="welcome"></div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-footer">
+        <center>
+            2022-9999&copy;版权所有|维权必究
+        </center>
+    </div>
+</div>
+</body>
+</html>

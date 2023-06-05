@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    namespace 表示的是命名空间
+    AccountMapper.xml映射文件，它映射的是AccountMapper这个接口类
+-->
+<mapper namespace="com.nanningedu.mapper.AccountMapper">
+
+    <!--
+        resultMap表示结果集映射
+            需要使用结果集映射的情况
+                当Account类里面的属性，与数据库account表里面的字段不一致的情况下
+            不需要使用结果集映射的情况
+                当Account类里面的属性，与数据库account表里面的字段一致的情况下
+        id属性：表示唯一，值为自定义
+        type属性：domain包下面，哪一个类，跟数据库表里面的字段对应不上，那么结果集映射就处理哪一个类
+    -->
+    <resultMap id="BaseResultMap" type="com.nanningedu.domain.Account">
+        <!--列字段       列字段类型          类属性       类属性类型-->
+        <id column="id" jdbcType="BIGINT" property="id"></id>
+        <!--在结果集映射中，column属性 和 property属性 是必须的-->
+        <result column="username" jdbcType="VARCHAR" property="username"></result>
+        <result column="pwd" jdbcType="VARCHAR" property="pwd"></result>
+        <result column="img_url" jdbcType="VARCHAR" property="imgUrl"></result>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"></result>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"></result>
+        <result column="role" jdbcType="INTEGER" property="role"></result>
+        <result column="status" jdbcType="INTEGER" property="status"></result>
+    </resultMap>
+
+    <!--公共的sql-->
+    <sql id="Base_Column_List">
+        id,username,pwd,img_url,create_time,update_time,role,status
+    </sql>
+
+    <!--sql语句需要通过对应的标签进行包裹-->
+    <!--
+        如果是查询的sql语句，那么就需要使用<select>标签进行包裹
+        id属性：值为AccountMapper里面的某一个接口名
+        parameterType属性：接口的参数（如果没有参数，那么就不需要使用parameterType）
+        resultType属性：接口的返回类型（resultType只能是查询时使用，insert/update/delete都不能使用）
+    -->
+    <!--
+        在之前的代码中，如果已经做了结果集映射的处理，那么直接使用结果集映射即可，不需要使用resultType来定义
+        如果在之前的代码中，没有使用过结果集映射，接口又有返回值，那么就需要使用resultType来定义
+        #{username}表示动态获取username的值
+    -->
+    <select id="selectByLogin" parameterType="com.nanningedu.dto.AccountDto"
+            resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from account
+        where username = #{username} and pwd = #{pwd} and status = 1
+    </select>
+
+</mapper>
