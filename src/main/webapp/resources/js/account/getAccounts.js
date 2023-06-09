@@ -196,6 +196,41 @@ new Vue({
                     }
                 });
             });
+        },
+
+        //重置密码功能
+        resetAccountPwd:function (row){
+            //删除是根据id来删的
+            let id = row.id;
+            this.$confirm("你确定要重置该用户的密码吗?","温馨提示").then(()=>{
+                axios({
+                    url:"/account/editAccountPwd.do",
+                    method:"POST",
+                    params:{
+                        id:id
+                    }
+                }).then((result)=>{
+                    let code = result.data.code;
+                    if(code == 200){
+                        //删除成功，刷新数据
+                        this.getAccountsByPage();
+                        //通知
+                        this.$notify({
+                            title:"温馨提示",
+                            message:"成功的重置了一位用户的密码",
+                            type:"success"
+                        })
+                    } else {
+                        //删除失败的通知
+                        let msg = result.data.msg;
+                        this.$notify({
+                            title:"温馨提示",
+                            message:msg + "，重置失败",
+                            type:"danger"
+                        })
+                    }
+                });
+            });
         }
 
 

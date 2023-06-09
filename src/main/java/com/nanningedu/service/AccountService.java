@@ -27,4 +27,7 @@ public interface AccountService {
 
     //删除用户
     Result removeOneAccount(Long id);
+
+    //重置密码
+    Result modifAccountPwd(Long id,String pwd);
 }
