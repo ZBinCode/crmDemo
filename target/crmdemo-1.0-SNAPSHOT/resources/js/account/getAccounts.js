@@ -128,17 +128,20 @@ new Vue({
         //弹出框里面的确定功能
         addAccountOK:function (){
             this.$refs['addAccountWinRef'].validate((valid)=>{
+                console.log(this.addAccountFormData.username)
                 //弹出框里面的数据验证通过
                 if(valid){
                     axios({
                         url:"/account/addAccount.do",
                         method:"POST",
-                        params:this.addAccountFormData
+                        params: {
+                            username:this.addAccountFormData.username
+                        }
                     }).then((result)=>{
                         let code = result.data.code;
                         if(code == 200){
                             //添加成功之后，要关闭弹出框
-                            this.addUsersWinOpenStatus = false;
+                            this.addAccountWinOpenStatus = false;
                             //刷新数据
                             this.getAccountsByPage();
                             //使用通知提示添加成功
@@ -159,6 +162,76 @@ new Vue({
                 }
             });
         },
+
+        // 删除用户
+        delOneAccount:function (row){
+            //删除是根据id来删的
+            let id = row.id;
+            this.$confirm("你确定要删除这条记录吗?","温馨提示").then(()=>{
+                axios({
+                    url:"/account/cutOneAccount.do",
+                    method:"POST",
+                    params:{
+                        id:id
+                    }
+                }).then((result)=>{
+                    let code = result.data.code;
+                    if(code == 200){
+                        //删除成功，刷新数据
+                        this.getAccountsByPage();
+                        //通知
+                        this.$notify({
+                            title:"温馨提示",
+                            message:"成功的删除了一条记录",
+                            type:"success"
+                        })
+                    } else {
+                        //删除失败的通知
+                        let msg = result.data.msg;
+                        this.$notify({
+                            title:"温馨提示",
+                            message:msg + "，删除失败",
+                            type:"danger"
+                        })
+                    }
+                });
+            });
+        },
+
+        //重置密码功能
+        resetAccountPwd:function (row){
+            //删除是根据id来删的
+            let id = row.id;
+            this.$confirm("你确定要重置该用户的密码吗?","温馨提示").then(()=>{
+                axios({
+                    url:"/account/editAccountPwd.do",
+                    method:"POST",
+                    params:{
+                        id:id
+                    }
+                }).then((result)=>{
+                    let code = result.data.code;
+                    if(code == 200){
+                        //删除成功，刷新数据
+                        this.getAccountsByPage();
+                        //通知
+                        this.$notify({
+                            title:"温馨提示",
+                            message:"成功的重置了一位用户的密码",
+                            type:"success"
+                        })
+                    } else {
+                        //删除失败的通知
+                        let msg = result.data.msg;
+                        this.$notify({
+                            title:"温馨提示",
+                            message:msg + "，重置失败",
+                            type:"danger"
+                        })
+                    }
+                });
+            });
+        }
 
 
     }
