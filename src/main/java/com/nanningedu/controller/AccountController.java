@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +24,17 @@ public class AccountController {
 
     @Autowired
     private AccountService accountService;
+
+    //列表
+    //required = false 意为如果没有给pageSize设置值
+    //defaultValue = "10" 意为那么就给pageSize设置一个值为10的默认值
+    @RequestMapping("/getAccountsByPage.do")
+    public Result getUsersByPage(
+            Integer pageNum,
+            @RequestParam(required = false,defaultValue = "10") Integer pageSize
+    ){
+        return accountService.findAccountByPage(pageNum,pageSize);
+    }
 
     //登录
     @RequestMapping("/getLogin.do")
@@ -45,6 +57,14 @@ public class AccountController {
     @RequestMapping("/editAccountStatus.do")
     public Result editAccountStatus(Integer status,Long id,HttpSession session){
         return accountService.modifyAccountStatus(status,id,session);
+    }
+
+    //添加账号
+    public Result addAccount(@Valid AccountDto accountDto,BindingResult br){
+        if(br.hasErrors()){
+            return Result.DATA_FORMAT_ERROR;
+        }
+        return accountService.saveAccount(accountDto);
     }
 
 }

@@ -5,6 +5,8 @@ import com.nanningedu.dto.AccountDto;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+
 /*
 * 接口类
 * 接口类中只能定义接口
@@ -33,5 +35,11 @@ public interface AccountMapper {
     //修改登录状态
     @Update("update account set status = #{arg0} where id = #{arg1}")
     int updateAccountStatus(Integer status,Long id);
+
+    //用户列表查询
+    List<Account> selectAccountByPage();
+
+    //添加用户账号
+    int insertAccount(AccountDto accountDto);
 
 }

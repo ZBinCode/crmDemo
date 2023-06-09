@@ -53,4 +53,18 @@
         where username = #{username} and pwd = #{pwd} and status = 1
     </select>
 
+    <!--获取用户列表-->
+    <select id="selectAccountByPage" parameterType="com.nanningedu.dto.AccountDto"
+            resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from account
+    </select>
+
+    <!--添加用户-->
+    <insert id="insertAccount" parameterType="com.nanningedu.dto.AccountDto">
+        insert into account(username,pwd,img_url,create_time,role,status)
+        values(#{username,jdbcType=VARCHAR},#{pwd,jdbcType=VARCHAR},
+               #{imgUrl,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},
+               #{role,jdbcType=INTEGER},#{status,jdbcType=INTEGER})
+    </insert>
+
 </mapper>

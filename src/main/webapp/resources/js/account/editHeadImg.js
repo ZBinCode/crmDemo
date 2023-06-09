@@ -7,7 +7,7 @@ new Vue({
         /*文件发生改变时，用作图片的预览*/
         onChange:function(file){
             //获取到上传图片的大小
-            let flag = file/size/1024/1024 > 1;
+            let flag = file.size/1024/1024 > 1;
             if(flag){
                 //显示错误
                 this.$alert("文件上传的大小最大只能为1M");
