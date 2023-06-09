@@ -134,4 +134,18 @@ public class AccountServiceImpl implements AccountService {
         return new Result();
     }
 
+    @Override
+    public Result modifAccountPwd(Long id, String pwd) {
+        if (id<=0){
+            return Result.DATA_FORMAT_ERROR;
+        }
+        //对密码进行加密
+        pwd = MD5Util.finalMD5(pwd);
+        int i = accountMapper.updateAccountPwd(id,pwd);
+        if(i == 0){
+            return new Result(-1,"重置密码失败");
+        }
+        return new Result();
+    }
+
 }

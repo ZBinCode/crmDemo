@@ -47,4 +47,8 @@ public interface AccountMapper {
     @Delete("delete FROM account WHERE id=#{arg0}")
     int deleteAccount(Long id);
 
+    //修改用户密码
+    @Update("update account set pwd=#{param2},update_time=now() where id = #{param1}")
+    int updateAccountPwd(Long id,String pwd);
+
 }

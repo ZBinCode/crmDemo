@@ -70,4 +70,13 @@ public class AccountController {
         return accountService.removeOneAccount(id);
     }
 
+    //重置密码
+    @RequestMapping("/editAccountPwd.do")
+    public Result editAccountPwd(
+            Long id,
+            @RequestParam(required = false,defaultValue = "123456") String pwd
+            ){
+        return accountService.modifAccountPwd(id,pwd);
+    }
+
 }
