@@ -23,5 +23,8 @@ public interface AccountService {
     Result findAccountByPage(Integer pageNum, Integer pageSize);
 
     //添加用户
-    Result saveAccount(AccountDto accountDto);
+    Result saveAccount(String username);
+
+    //删除用户
+    Result removeOneAccount(Long id);
 }

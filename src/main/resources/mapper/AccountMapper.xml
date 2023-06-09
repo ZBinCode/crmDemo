@@ -59,12 +59,10 @@
         select <include refid="Base_Column_List"/> from account
     </select>
 
-    <!--添加用户-->
+
     <insert id="insertAccount" parameterType="com.nanningedu.dto.AccountDto">
-        insert into account(username,pwd,img_url,create_time,role,status)
-        values(#{username,jdbcType=VARCHAR},#{pwd,jdbcType=VARCHAR},
-               #{imgUrl,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},
-               #{role,jdbcType=INTEGER},#{status,jdbcType=INTEGER})
+        insert into account(username,img_url,create_time,role,status)
+        values(#{arg0},'default.png',now(),0,0)
     </insert>
 
 </mapper>

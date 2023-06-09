@@ -60,11 +60,14 @@ public class AccountController {
     }
 
     //添加账号
-    public Result addAccount(@Valid AccountDto accountDto,BindingResult br){
-        if(br.hasErrors()){
-            return Result.DATA_FORMAT_ERROR;
-        }
-        return accountService.saveAccount(accountDto);
+    @RequestMapping("/addAccount.do")
+    public Result addAccount(String username){
+        return accountService.saveAccount(username);
+    }
+
+    @RequestMapping("/cutOneAccount.do")
+    public Result cutOneAccount(Long id){
+        return accountService.removeOneAccount(id);
     }
 
 }

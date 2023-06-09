@@ -2,6 +2,7 @@ package com.nanningedu.mapper;
 
 import com.nanningedu.domain.Account;
 import com.nanningedu.dto.AccountDto;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -40,6 +41,10 @@ public interface AccountMapper {
     List<Account> selectAccountByPage();
 
     //添加用户账号
-    int insertAccount(AccountDto accountDto);
+    int insertAccount(String username);
+
+    //删除用户
+    @Delete("delete FROM account WHERE id=#{arg0}")
+    int deleteAccount(Long id);
 
 }

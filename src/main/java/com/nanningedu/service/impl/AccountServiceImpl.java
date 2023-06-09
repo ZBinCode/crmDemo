@@ -106,27 +106,30 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result saveAccount(AccountDto accountDto) {
-        int i = accountMapper.selectUserNameIsExist(accountDto.getUsername());
+    public Result saveAccount(String username) {
+        if (username.replaceAll("\\s", "") == null || username.isEmpty() ){
+            return new Result(-1,"用户名称不能为空");
+        }
+        int i = accountMapper.selectUserNameIsExist(username);
         if (i == 1){
             return new Result(-1,"要添加的账号，数据库中已经存在");
         }
-        //设置密码，初始密码为123456
-        String pwd = MD5Util.finalMD5("123456");
-        accountDto.setPwd(pwd);
-        //获取当前时间
-        Date date = new Date();
-        //设置创建时间
-        accountDto.setCreateTime(date);
-        //设置图片地址为默认
-        accountDto.setImgUrl("default.png");
-        //默认为非管理员
-        accountDto.setRole(0);
-        //默认状态为启用
-        accountDto.setStatus(1);
-        int n = accountMapper.insertAccount(accountDto);
+        int n = accountMapper.insertAccount(username);
         if(n == 0){
             return new Result(-1,"添加失败");
+        }
+        return new Result();
+    }
+
+    @Override
+    public Result removeOneAccount(Long id) {
+        if (id<=0){
+            return Result.DATA_FORMAT_ERROR;
+        }
+        //删除
+        int i = accountMapper.deleteAccount(id);
+        if(i == 0){
+            return new Result(-1,"删除失败");
         }
         return new Result();
     }
