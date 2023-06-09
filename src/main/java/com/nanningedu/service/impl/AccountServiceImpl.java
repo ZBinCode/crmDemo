@@ -1,8 +1,11 @@
 package com.nanningedu.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.nanningedu.common.Constants;
 import com.nanningedu.common.Result;
 import com.nanningedu.domain.Account;
+import com.nanningedu.domain.User;
 import com.nanningedu.dto.AccountDto;
 import com.nanningedu.mapper.AccountMapper;
 import com.nanningedu.service.AccountService;
@@ -11,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /*
  * 实现类
@@ -82,6 +88,45 @@ public class AccountServiceImpl implements AccountService {
         int i = accountMapper.updateAccountStatus(status,id);
         if(i == 0){
             return new Result(-1,"修改状态失败");
+        }
+        return new Result();
+    }
+
+    @Override
+    public Result findAccountByPage(Integer pageNum, Integer pageSize) {
+        //分页的约束条件
+        PageHelper.startPage(pageNum,pageSize);
+        List<Account> accountList = accountMapper.selectAccountByPage();
+        //要对pageInfo里面的数据进行分页
+        PageInfo<Account> pageInfo = new PageInfo<>(accountList);
+        Result result = new Result();
+        result.setData(pageInfo.getList());
+        result.setTotal(pageInfo.getTotal());
+        return result;
+    }
+
+    @Override
+    public Result saveAccount(AccountDto accountDto) {
+        int i = accountMapper.selectUserNameIsExist(accountDto.getUsername());
+        if (i == 1){
+            return new Result(-1,"要添加的账号，数据库中已经存在");
+        }
+        //设置密码，初始密码为123456
+        String pwd = MD5Util.finalMD5("123456");
+        accountDto.setPwd(pwd);
+        //获取当前时间
+        Date date = new Date();
+        //设置创建时间
+        accountDto.setCreateTime(date);
+        //设置图片地址为默认
+        accountDto.setImgUrl("default.png");
+        //默认为非管理员
+        accountDto.setRole(0);
+        //默认状态为启用
+        accountDto.setStatus(1);
+        int n = accountMapper.insertAccount(accountDto);
+        if(n == 0){
+            return new Result(-1,"添加失败");
         }
         return new Result();
     }

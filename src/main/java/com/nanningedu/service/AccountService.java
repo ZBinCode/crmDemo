@@ -19,4 +19,9 @@ public interface AccountService {
     //状态的禁用和启用
     Result modifyAccountStatus(Integer status,Long id,HttpSession session);
 
+    //分页查询
+    Result findAccountByPage(Integer pageNum, Integer pageSize);
+
+    //添加用户
+    Result saveAccount(AccountDto accountDto);
 }
