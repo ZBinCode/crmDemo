@@ -77,7 +77,8 @@ new Vue({
             this.getAccountsByPage();
         },
         updateTimeFmt:function (row){
-            return row.updateTime
+            var updateTime = row.updateTime
+            return updateTime == null ? '暂无时间': updateTime
         },
         statusFmt:function (row){
             return row.status == "1" ? "启用" : "禁用"
